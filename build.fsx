@@ -20,7 +20,7 @@ Target "clean" (fun _ ->
 )
 
 Target "build" (fun _ ->
-  [ "suave-service-template.sln" ]
+  [ "ukgov-expenditure.sln" ]
   |> MSBuildRelease "" "Rebuild"
   |> Log ""
 )
@@ -57,7 +57,7 @@ Target "start" (fun _ ->
 
 Target "run" (fun _ ->
   traceImportant "Press any key to stop!"
-  Console.ReadKey() |> ignore
+  Console.ReadLine() |> ignore
 )
 
 "start" ==> "run"

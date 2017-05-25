@@ -1,0 +1,94 @@
+Index,ParentIndex,Name
+1.1,1.0,"Executive and legislative organs, financial and fiscal affairs, external affairs"
+1.2,1.0,Foreign economic aid
+1.3,1.0,General services
+1.5,1.0,R&D general public services
+1.6,1.0,General public services n.e.c.
+1.7,1.0,Public debt transactions
+1.7.a,1.0,Debt interest: Central government
+1.7.b,1.0,Debt interest: Local government
+1.7.c,1.0,Debt interest: Public corporation
+1.7.d,1.0,Debt interest: Bank of England
+2.1,2.0,Military defence
+2.2,2.0,Civil defence
+2.3,2.0,Foreign military aid
+2.4,2.0,R&D defence
+2.5,2.0,Defence n.e.c
+3.1,3.0,Police services
+3.1.a,3.0,Police services: immigration and citizenship
+3.1.b,3.0,Police services: other police services
+3.2,3.0,Fire-protection services
+3.3,3.0,Law courts
+3.4,3.0,Prisons
+3.5,3.0,R&D public order and safety
+3.6,3.0,Public order and safety n.e.c.
+4.1,4.0,"General economic, commercial and labour affairs "
+4.2,4.0,"Agriculture, forestry, fishing and hunting"
+4.2.a,4.0,"Agriculture, forestry, fishing and hunting: market support under CAP"
+4.2.b,4.0,"Agriculture, forestry, fishing and hunting: other agriculture, food and fisheries policy"
+4.2.c,4.0,"Agriculture, forestry, fishing and hunting: forestry"
+4.3,4.0,Fuel and energy
+4.4,4.0,"Mining, manufacturing and construction"
+4.5,4.0,Transport
+4.5.a,4.0,Transport: national roads
+4.5.b,4.0,Transport: local roads
+4.5.c,4.0,Transport: local public transport
+4.5.d,4.0,Transport: railway (3)
+4.5.e,4.0,Transport: other transport
+4.6,4.0,Communication
+4.7,4.0,Other industries
+4.8,4.0,R&D economic affairs
+4.9,4.0,Economic affairs n.e.c
+5.1,5.0,Waste management
+5.3,5.0,Pollution abatement
+5.4,5.0,Protection of biodiversity and landscape
+5.5,5.0,R&D environment protection
+5.6,5.0,Environment protection n.e.c
+6.1,6.0,Housing development
+6.1.a,6.0,Housing development: local authority housing
+6.1.b,6.0,Housing development: other social housing
+6.2,6.0,Community development
+6.3,6.0,Water supply
+6.4,6.0,Street lighting
+6.6,6.0,Housing and community amenities n.e.c
+7.1,7.0,Medical services
+7.2,7.0,Medical research
+7.3,7.0,Central and other health services
+8.1,8.0,Recreational and sporting services
+8.2,8.0,Cultural services
+8.3,8.0,Broadcasting and publishing services
+8.4,8.0,Religious and other community services
+8.5,8.0,"R&D recreation, culture and religion"
+8.6,8.0,"Recreation, culture and religion n.e.c"
+9.1,9.0,Pre-primary and primary education
+9.1.a,9.0,Pre-primary and primary education: under fives
+9.1.b,9.0,Pre-primary and primary education: primary education
+9.2,9.0,Secondary education
+9.3,9.0,Post-secondary non-tertiary education
+9.4,9.0,Tertiary education
+9.5,9.0,Education not definable by level
+9.6,9.0,Subsidiary services to education
+9.7,9.0,R&D education
+9.8,9.0,Education n.e.c
+10.1,10.0,Sickness and disability
+10.1.a,10.0,Sickness and disability: personal social services
+10.1.b,10.0,"Sickness and disability: incapacity, disability and injury benefits"
+10.2,10.0,Old age
+10.2.a,10.0,Old age: personal social services
+10.2.b,10.0,Old age: pensions
+10.3,10.0,Survivors
+10.4,10.0,Family and children
+10.4.a,10.0,Family and Children: personal social services
+10.4.b,10.0,"Family and Children: family benefits, income support and tax credits"
+10.5,10.0,Unemployment 
+10.5.b,10.0,Unemployment: other unemployment benefits
+10.6,10.0,Housing
+10.7,10.0,Social exclusion n.e.c.
+10.7.a,10.0,Social exclusion: Personal social services
+10.7.b,10.0,"Social exclusion: Family benefits, income support and tax credits"
+10.9,10.0,Social protection n.e.c.
+11.1,11.0,VAT -based and GNI -based contributions
+11.1.a,11.0,EU Gross contribution pre-abatement and after dedeuction of collection costs
+11.1.b,11.0,Traditional Own Resources (without deduction of collection costs)
+11.1.c,11.0,UK Abatement
+11.2,11.0,EU Receipts
