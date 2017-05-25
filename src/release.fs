@@ -11,8 +11,9 @@ open System
 
 /// List of available servers - corresponds to folders
 let servers = 
-   //[ "demo", Services.Demo.app ] |> dict
   [ "expenditure", GovUK.Server.app ] |> dict
+   //[ "demo", Services.Demo.app ] |> dict
+  
   
 /// Drop the <s> part from http://localhost:123/<s>/something
 let dropPrefix part ctx = 
