@@ -20,7 +20,7 @@ Target "clean" (fun _ ->
 )
 
 Target "build" (fun _ ->
-  [ "ukgov-expenditure.sln" ]
+  [ "govuk-expenditure.sln" ]
   |> MSBuildRelease "" "Rebuild"
   |> Log ""
 )
