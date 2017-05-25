@@ -17,7 +17,8 @@ open System.IO
 open FSharp.Data
 open Newtonsoft.Json
 open System.Collections.Generic
-open GovUK
+open GovUK.Dictionaries
+open GovUK.JSON
 
 // ------------------------
 // Type stuff for responses
@@ -38,7 +39,7 @@ let noSchema = Unchecked.defaultof<ThingSchema>
 // Data import
 // -----------
 
-let allData = ReadDictionaries.retrieveData ()
+let allData = GovUK.Dictionaries.retrieveData ()
 
 // ------
 // Server
@@ -101,7 +102,7 @@ let app =
             trace=[| |]; schema = noSchema } ])
 
       memberPathf "/byService/%s/pickSubService" (fun serviceid ->
-        let childrenOfService = ReadDictionaries.getChildrenOfServiceID serviceid allData.SubServiceSeq
+        let childrenOfService = GovUK.Dictionaries.getChildrenOfServiceID serviceid allData.SubServiceSeq
         [ for (KeyValue(id, (x, subservice))) in childrenOfService ->
             let typ = { name="tuple"; ``params``=[| "int"; "float" |] }
             let typ = { name="seq"; ``params``=[| typ |]}

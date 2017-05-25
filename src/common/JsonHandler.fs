@@ -1,5 +1,4 @@
-module GovUK
-
+module GovUK.JSON
 open Newtonsoft.Json
 open FSharp.Data
 
