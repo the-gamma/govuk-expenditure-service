@@ -6,6 +6,12 @@ open System.IO
 open FSharp.Core
 open FSharp.Data
 
+#if INTERACTIVE
+let dataDirectory = __SOURCE_DIRECTORY__ + "/../../data/"
+#else
+let dataDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/../data"
+#endif
+
 type DataPoint(service:string, subservice:string, account: string, valueInTermsOf:string, year:string, value:float) =
      member x.ToString = sprintf "Service: %s, Subservice: %s, Value: %f, inTermsOf: %s, Account: %s, Year: %s," service subservice value valueInTermsOf account year
      member x.Service = service
@@ -44,17 +50,18 @@ type OldServiceProvider = CsvProvider<oldservicesCsv, Schema = "string, float, f
     // ----------
     // File paths
     // ----------
-let  [<Literal>] servicesPath = __SOURCE_DIRECTORY__ + "/../../data/headers/services.csv"
-let  [<Literal>] subservicesPath = __SOURCE_DIRECTORY__ + "/../../data/headers/subservices.csv"
-let  [<Literal>] yearsPath = __SOURCE_DIRECTORY__ + "/../../data/headers/years.csv"
-let  [<Literal>] termsPath = __SOURCE_DIRECTORY__ + "/../../data/headers/terms.csv"
-let  [<Literal>] accountsPath = __SOURCE_DIRECTORY__ + "/../../data/headers/accounts.csv"
-let  [<Literal>] table4Dot2Path = __SOURCE_DIRECTORY__ + "/../../data/headers/Table4-2.csv"
-let  [<Literal>] table4Dot3Path = __SOURCE_DIRECTORY__ + "/../../data/headers/Table4-3.csv"
-let  [<Literal>] table4Dot4Path = __SOURCE_DIRECTORY__ + "/../../data/headers/Table4-4.csv"
-let  [<Literal>] table5Dot4Dot1Path = __SOURCE_DIRECTORY__ + "/../../data/headers/Table5-4-1.csv"
-let  [<Literal>] table5Dot4Dot2Path = __SOURCE_DIRECTORY__ + "/../../data/headers/Table5-4-2.csv"
-let  [<Literal>] table5Dot2Path = __SOURCE_DIRECTORY__ + "/../../data/headers/Table5-2.csv"
+
+let servicesPath = dataDirectory + "/headers/services.csv"
+let subservicesPath = dataDirectory + "/headers/subservices.csv"
+let yearsPath = dataDirectory + "/headers/years.csv"
+let termsPath = dataDirectory + "/headers/terms.csv"
+let accountsPath = dataDirectory + "/headers/accounts.csv"
+let table4Dot2Path = dataDirectory + "/headers/Table4-2.csv"
+let table4Dot3Path = dataDirectory + "/headers/Table4-3.csv"
+let table4Dot4Path = dataDirectory + "/headers/Table4-4.csv"
+let table5Dot4Dot1Path = dataDirectory + "/headers/Table5-4-1.csv"
+let table5Dot4Dot2Path = dataDirectory + "/headers/Table5-4-2.csv"
+let table5Dot2Path = dataDirectory + "/headers/Table5-2.csv"
 
 let getKeyOf value keyValueList =
     match List.tryFind (fun (k,v) -> (v = value)) keyValueList with
