@@ -82,16 +82,28 @@ let app =
             trace=[| |]; schema = noSchema }])
 
       memberPath "/byYear/pickService" (fun () ->
-        [ for (KeyValue(id, service)) in allData.Services ->
+        let mainServices = GovUK.Dictionaries.OfWhichAreMainServices allData.Services
+        [ for (KeyValue(id, service)) in mainServices ->
             let typ = { name="tuple"; ``params``=[| "string"; "float" |] }
             let typ = { name="seq"; ``params``=[| typ |]}
             { name=service; returns={ kind="primitive"; ``type``= typ; endpoint="/data"}
               trace=[|"service=" + id |]; schema = noSchema } ])
 
       memberPath "/pickService" (fun () ->
-        [ for (KeyValue(id, service)) in allData.Services ->
-            { name=service; returns={kind="nested"; endpoint="/byService/" + id + "/pickSlice"}
+        let mainServices = GovUK.Dictionaries.OfWhichAreMainServices allData.Services
+        [ for (KeyValue(id, service)) in mainServices ->
+            { name=service; returns={kind="nested"; endpoint="/byService/" + id + "/pickOptions"}
               trace=[|"service=" + id |]; schema = noSchema } ])
+
+      memberPathf "/byService/%s/pickOptions" (fun serviceid ->
+            [ { name="bySubService"; returns= {kind="nested"; endpoint="/byService/" + serviceid + "/pickSubService"}
+                trace=[| |]; schema = noSchema }
+              { name="byAccount"; returns= {kind="nested"; endpoint="/byService/pickAccount"}
+                trace=[| |]; schema = noSchema }
+              { name="inTermsOf"; returns= {kind="nested"; endpoint="/byService/pickTerms"}
+                trace=[| |]; schema = noSchema } 
+              { name="ofWhichComponentIs"; returns= {kind="nested"; endpoint="/byService/"+serviceid+"/pickComponents"}
+                trace=[| |]; schema = noSchema }])
 
       memberPathf "/byService/%s/pickSlice" (fun serviceid ->
         [ { name="bySubService"; returns= {kind="nested"; endpoint="/byService/" + serviceid + "/pickSubService"}
@@ -99,7 +111,7 @@ let app =
           { name="byAccount"; returns= {kind="nested"; endpoint="/byService/pickAccount"}
             trace=[| |]; schema = noSchema }
           { name="inTermsOf"; returns= {kind="nested"; endpoint="/byService/pickTerms"}
-            trace=[| |]; schema = noSchema } ])
+            trace=[| |]; schema = noSchema }])
 
       memberPathf "/byService/%s/pickSubService" (fun serviceid ->
         let childrenOfService = GovUK.Dictionaries.getChildrenOfServiceID serviceid allData.SubServiceSeq
@@ -118,6 +130,12 @@ let app =
             let typ = { name="seq"; ``params``=[| typ |]}
             { name=account; returns={ kind="primitive"; ``type``= typ; endpoint="/data"}
               trace=[|"account=" + id |]; schema = noSchema } ])
+
+      memberPathf "/byService/%s/pickComponents" (fun serviceid ->
+        let componentsOfService = GovUK.Dictionaries.OfWhichAreComponentServices (serviceid,allData.Services)
+        [ for (KeyValue(id, service)) in componentsOfService ->
+            { name=service; returns={kind="nested"; endpoint="/byService/" + id + "/pickSlice"}
+              trace=[|"service=" + id |]; schema = noSchema }  ])
 
       memberPathf "/%s/pickTerms" (fun byX ->
         [ for (KeyValue(id, term)) in allData.Terms ->

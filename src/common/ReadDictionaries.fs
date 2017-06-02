@@ -81,6 +81,17 @@ let getKeyOfSubService subServiceName keyValueList =
     | Some (key, value) -> key 
     | None -> ""
 
+let OfWhichAreComponentServices (parentIndex:string, serviceDictionary) = 
+    let firstSectionOfID = parentIndex.IndexOf(".")
+    let commonID = parentIndex.[0..firstSectionOfID]
+    serviceDictionary |> Seq.filter (fun (KeyValue(index, service)) -> index.ToString().StartsWith commonID) 
+                        |> Seq.filter (fun (KeyValue(index, service)) -> not (index.ToString().Contains "0") 
+                        ) 
+let OfWhichAreMainServices (serviceDictionary) = 
+    let mainServices = serviceDictionary |> Seq.filter (fun (KeyValue(index, service)) -> index.ToString().Contains ".0")  
+    mainServices
+
+
 let retrieveData () = 
     // -------------------
     // Dictionary creation
