@@ -3,7 +3,7 @@
 #r "../../packages/Suave/lib/net40/Suave.dll"
 #r "../../packages/Newtonsoft.Json/lib/net40/Newtonsoft.Json.dll"
 #r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
-#load "../common/ReadDictionaries.fs" "../common/serializer.fs" "../common/JsonHandler.fs"
+#load "../common/LoadData.fs" "../common/serializer.fs" "../common/JsonHandler.fs"
 #else
 module GovUK.Server
 #endif
@@ -40,7 +40,6 @@ let noSchema = Unchecked.defaultof<ThingSchema>
 // -----------
 
 let allData = GovUK.Dictionaries.retrieveData ()
-
 // ------
 // Server
 // ------
@@ -83,7 +82,7 @@ let app =
 
       memberPath "/byYear/pickService" (fun () ->
         let mainServices = GovUK.Dictionaries.OfWhichAreMainServices allData.Services
-        [ for (KeyValue(id, service)) in mainServices ->
+        [ for (KeyValue(id, (_,_,service))) in mainServices ->
             let typ = { name="tuple"; ``params``=[| "string"; "float" |] }
             let typ = { name="seq"; ``params``=[| typ |]}
             { name=service; returns={ kind="primitive"; ``type``= typ; endpoint="/data"}
@@ -91,17 +90,17 @@ let app =
 
       memberPath "/pickService" (fun () ->
         let mainServices = GovUK.Dictionaries.OfWhichAreMainServices allData.Services
-        [ for (KeyValue(id, service)) in mainServices ->
+        [ for (KeyValue(id, (_,_,service))) in mainServices ->
             { name=service; returns={kind="nested"; endpoint="/byService/" + id + "/pickOptions"}
-              trace=[|"service=" + id |]; schema = noSchema } ])
+              trace=[| |]; schema = noSchema } ])
 
       memberPathf "/byService/%s/pickOptions" (fun serviceid ->
             [ { name="bySubService"; returns= {kind="nested"; endpoint="/byService/" + serviceid + "/pickSubService"}
-                trace=[| |]; schema = noSchema }
+                trace=[| "service=" + serviceid |]; schema = noSchema }
               { name="byAccount"; returns= {kind="nested"; endpoint="/byService/pickAccount"}
-                trace=[| |]; schema = noSchema }
+                trace=[| "service=" + serviceid |]; schema = noSchema }
               { name="inTermsOf"; returns= {kind="nested"; endpoint="/byService/pickTerms"}
-                trace=[| |]; schema = noSchema } 
+                trace=[| "service=" + serviceid |]; schema = noSchema } 
               { name="ofWhichComponentIs"; returns= {kind="nested"; endpoint="/byService/"+serviceid+"/pickComponents"}
                 trace=[| |]; schema = noSchema }])
 
@@ -114,8 +113,8 @@ let app =
             trace=[| |]; schema = noSchema }])
 
       memberPathf "/byService/%s/pickSubService" (fun serviceid ->
-        let childrenOfService = GovUK.Dictionaries.getChildrenOfServiceID serviceid allData.SubServiceSeq
-        [ for (KeyValue(id, (x, subservice))) in childrenOfService ->
+        let childrenOfService = GovUK.Dictionaries.getChildrenWithParentIDAtLevel serviceid "Subservice" allData.SubServices
+        [ for (KeyValue(id, (parent, level, subservice))) in childrenOfService ->
             let typ = { name="tuple"; ``params``=[| "int"; "float" |] }
             let typ = { name="seq"; ``params``=[| typ |]}
             { name=subservice; returns={ kind="primitive"; ``type``= typ; endpoint="/data"}
@@ -132,8 +131,8 @@ let app =
               trace=[|"account=" + id |]; schema = noSchema } ])
 
       memberPathf "/byService/%s/pickComponents" (fun serviceid ->
-        let componentsOfService = GovUK.Dictionaries.OfWhichAreComponentServices (serviceid,allData.Services)
-        [ for (KeyValue(id, service)) in componentsOfService ->
+        let componentsOfService = GovUK.Dictionaries.getChildrenWithParentIDAtLevel serviceid "Component Of Service" allData.Services
+        [ for (KeyValue(id, (_,_,service))) in componentsOfService ->
             { name=service; returns={kind="nested"; endpoint="/byService/" + id + "/pickSlice"}
               trace=[|"service=" + id |]; schema = noSchema }  ])
 
@@ -152,8 +151,9 @@ let app =
           [ for kvps in (Utils.ASCII.toString r.rawForm).Split('&') ->
               match kvps.Split('=') with
               | [| k; v |] -> k, v
-              | _ -> failwith "wrong trace" ] |> dict
-
+              | _ -> failwith "bad trace" ] |> dict
+        
+        let traceMessage = sprintf "Trace: %A" trace
         match trace with
         | (Lookup "service" s) & (Lookup "account" a) ->
           allData.Data
@@ -173,24 +173,30 @@ let app =
             |> Seq.map (fun dt -> allData.Years.[dt.Year], dt.Value)
             |> formatPairSeq JsonValue.String
             |> Successful.OK
-        | (Lookup "year" y) & (Lookup "account" a) ->
-          allData.Data
-            |> Seq.filter (fun dt -> dt.Year = y && dt.Account = a)
-            |> Seq.map (fun dt -> allData.Services.[dt.Service], dt.Value)
-            |> formatPairSeq JsonValue.String
-            |> Successful.OK
-        | (Lookup "year" y) & (Lookup "inTermsOf" t) ->
-          allData.Data
-            |> Seq.filter (fun dt -> dt.Year = y && dt.ValueInTermsOf = t)
-            |> Seq.map (fun dt -> allData.Services.[dt.Service], dt.Value)
-            |> formatPairSeq JsonValue.String
-            |> Successful.OK
-        | (Lookup "year" y) & (Lookup "service" s) ->
-          allData.Data 
-            |> Seq.filter (fun dt -> dt.Year = y && dt.Service = s && dt.Subservice <> "")
-            |> Seq.map (fun dt -> snd(allData.SubServices.[dt.Subservice]), dt.Value)
-            |> formatPairSeq JsonValue.String
-            |> Successful.OK
-        | _ -> failwith "bad trace" ) 
+        // | (Lookup "year" y) & (Lookup "account" a) ->
+        //   allData.Data
+        //     |> Seq.filter (fun dt -> dt.Year = y && dt.Account = a)
+        //     |> Seq.map (fun dt -> allData.Services.[dt.Service], dt.Value)
+        //     |> formatPairSeq JsonValue.String
+        //     |> Successful.OK
+        // | (Lookup "year" y) & (Lookup "inTermsOf" t) ->
+        //   allData.Data
+        //     |> Seq.filter (fun dt -> dt.Year = y && dt.ValueInTermsOf = t)
+        //     |> Seq.map (fun dt -> allData.Services.[dt.Service], dt.Value)
+        //     |> formatPairSeq JsonValue.String
+        //     |> Successful.OK
+        // | (Lookup "year" y) & (Lookup "service" s) ->
+        //   allData.Data 
+        //     |> Seq.filter (fun dt -> dt.Year = y && dt.Service = s && dt.Subservice <> "")
+        //     |> Seq.map (fun dt -> snd(allData.SubServices.[dt.Subservice]), dt.Value)
+        //     |> formatPairSeq JsonValue.String
+        //     |> Successful.OK
+        // | (Lookup "year" y) & (Lookup "service" s) ->
+        //   allData.Data 
+        //     |> Seq.filter (fun dt -> dt.Year = y && dt.Service = s && dt.Subservice <> "")
+        //     |> Seq.map (fun dt -> snd(allData.SubServices.[dt.Subservice]), dt.Value)
+        //     |> formatPairSeq JsonValue.String
+        //     |> Successful.OK
+        | _ -> failwith traceMessage) 
        ]
 

@@ -1,4 +1,4 @@
-module GovUK.Dictionaries
+module GovUK.DictionariesOld
 
 open System
 open System.Collections.Generic
@@ -68,9 +68,21 @@ let getKeyOf value keyValueList =
     | Some (key, value) -> key
     | None -> ""
 
-let getChildrenOfServiceID parentID subserviceSeq =   
+let getChildrenOfServiceIDOld parentID subserviceSeq =   
     let children = subserviceSeq |> List.filter (fun (id, (parentid, serviceDetails)) -> parentid = parentID)
     children |> dict
+
+let isAlphabet (str:string) =
+    let isInAlphabetRange x = (x > 64 && x < 91 ) || (x > 96 && x < 123) || x = 32
+    let inRange = 
+        str
+        |> Seq.map (fun c -> isInAlphabetRange(int c))
+        |> Seq.exists (fun b -> b=true)
+    inRange
+
+let getChildrenOfServiceID parentID subserviceSeq =   
+    let children = subserviceSeq |> List.filter (fun (id, (parentid, serviceDetails)) -> (parentid = parentID) && not (isAlphabet id))
+    children |> dict  
 
 let getParentOfSubservice subserviceName subserviceSeq =   
     let (_,(parentID,_))= subserviceSeq |> List.find (fun (id, (parentid, serviceDetails)) -> serviceDetails = subserviceName)
@@ -90,6 +102,11 @@ let OfWhichAreComponentServices (parentIndex:string, serviceDictionary) =
 let OfWhichAreMainServices (serviceDictionary) = 
     let mainServices = serviceDictionary |> Seq.filter (fun (KeyValue(index, service)) -> index.ToString().Contains ".0")  
     mainServices
+
+let isMainSubService (subServiceSeq) = 
+    let mainSubServices = subServiceSeq |> Seq.filter (fun (id, (parentid, serviceDetails)) -> 
+        not (isAlphabet id))  
+    mainSubServices
 
 
 let retrieveData () = 
