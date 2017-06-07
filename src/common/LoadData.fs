@@ -12,7 +12,7 @@ let dataDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.G
 #endif
 
 type DataPoint(service:string, subservice:string, account: string, valueInTermsOf:string, year:string, value:float, parentid: string, level: string) =
-     member x.ToString = sprintf "Service: %s, Subservice: %s, Value: %f, inTermsOf: %s, Account: %s, Year: %s," service subservice value valueInTermsOf account year
+     member x.ToString = sprintf "Service: %s, Parent: %s, Value: %f, inTermsOf: %s, Account: %s, Year: %s, Level:%s" service parentid value valueInTermsOf account year level
      member x.Service = service
      member x.Subservice = subservice
      member x.Account = account
@@ -76,23 +76,19 @@ let getParentOfObject value keyValueList =
     | Some (key, (parent, level, v) ) -> parent
     | None -> ""
 
-let getChildrenOfServiceIDOld parentID subserviceSeq =   
-    let children = subserviceSeq |> List.filter (fun (id, (parentid, serviceDetails)) -> parentid = parentID)
-    children |> dict
-
-let isAlphabet (str:string) =
-    let isInAlphabetRange x = (x > 64 && x < 91 ) || (x > 96 && x < 123) || x = 32
-    let inRange = 
-        str
-        |> Seq.map (fun c -> isInAlphabetRange(int c))
-        |> Seq.exists (fun b -> b=true)
-    inRange
+// let isAlphabet (str:string) =
+//     let isInAlphabetRange x = (x > 64 && x < 91 ) || (x > 96 && x < 123) || x = 32
+//     let inRange = 
+//         str
+//         |> Seq.map (fun c -> isInAlphabetRange(int c))
+//         |> Seq.exists (fun b -> b=true)
+//     inRange
 
 
     // children |> dict  
 
-// let getParentOfSubservice subserviceName subserviceSeq =   
-//     let (_,(parentID,_))= subserviceSeq |> List.find (fun (id, (parentid, serviceDetails)) -> serviceDetails = subserviceName)
+// let getParentOfService serviceID aSeq =   
+//     let (_,(parentID,_)) = aSeq |> List.find (fun (id, (parentid, serviceDetails)) -> serviceDetails = subserviceName)
 //     parentID
 
 let getKeyOfSubService subServiceName keyValueList =
@@ -100,23 +96,26 @@ let getKeyOfSubService subServiceName keyValueList =
     | Some (key, value) -> key 
     | None -> ""
 
-// let OfWhichAreComponentServices (parentIndex:string, serviceDictionary) = 
-//     let firstSectionOfID = parentIndex.IndexOf(".")
-//     let commonID = parentIndex.[0..firstSectionOfID]
-//     serviceDictionary |> Seq.filter (fun (KeyValue(index, service)) -> index.ToString().StartsWith commonID) 
-//                         |> Seq.filter (fun (KeyValue(index, service)) -> not (index.ToString().Contains "0") 
-                        // ) 
-let OfWhichAreMainServices (serviceDictionary) = 
+let OfWhichAreMainServices serviceDictionary = 
     serviceDictionary |> Seq.filter (fun (KeyValue(index, (parent, level, name))) -> level="Service")  
  
 let getChildrenWithParentIDAtLevel parentID itemLevel serviceDictionary =   
     serviceDictionary |> Seq.filter (fun (KeyValue(id, (parentid, level, _))) -> level = itemLevel && parentid = parentID)
-    
 
-let isMainSubService (subServiceSeq) = 
-    let mainSubServices = subServiceSeq |> Seq.filter (fun (id, (parentid, serviceDetails)) -> 
-        not (isAlphabet id))  
-    mainSubServices
+let getGrandchildrenOfServiceID serviceID aSeq =
+    let total = new Dictionary<string, (string * string * string)>() 
+    let children = getChildrenWithParentIDAtLevel serviceID "Subservice" aSeq
+    let totalGrandchildren = children |> Seq.map (fun (KeyValue(id, (parentid,level,serviceName))) -> 
+        let grandchildrenOfAChild = getChildrenWithParentIDAtLevel id "Component of Subservice" aSeq
+        grandchildrenOfAChild |> Seq.iter (fun (KeyValue(id, (parentid,level,name))) -> total.Add(id, (parentid, level, name)))
+        ) 
+    printfn "AllGrandchildren: %A " totalGrandchildren
+    total
+    
+// let isMainSubService (subServiceSeq) = 
+//     let mainSubServices = subServiceSeq |> Seq.filter (fun (id, (parentid, serviceDetails)) -> 
+//         not (isAlphabet id))  
+//     mainSubServices
 
 let retrieveData () = 
     // -------------------
@@ -199,7 +198,11 @@ let retrieveData () =
     let allValues = List.concat [nominalData; adjustedData; gdpData; currentData; capitalData; subserviceData]
 
     // nominalData |> List.iter (fun x -> printfn "%s" x.ToString)
+    // allValues |> Seq.filter (fun dt -> dt.Year = "2015" && dt.Parent = "4.0" && dt.Level = "Subservice") 
+    //         |> Seq.iter (fun x -> printfn "%s" x.ToString)
     
+    // let (parentid, level, serviceName) = subserviceDict.["4.1"]
+    // printfn "Subservice 4.1: %s" serviceName
     { 
         Services=serviceDict;
         SubServices=subserviceDict;

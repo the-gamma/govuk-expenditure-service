@@ -1,16 +1,16 @@
 Index,ParentIndex,Level,Name
 1.0,0.0,Service,General public services
-1.a,1.0,Component Of Service,Public and common services
-1.b,1.0,Component Of Service,International services
-1.c,1.0,Component Of Service,Public sector debt interest
+1.a,1.0,Component of Service,Public and common services
+1.b,1.0,Component of Service,International services
+1.c,1.0,Component of Service,Public sector debt interest
 2.0,0.0,Service,Defence
 3.0,0.0,Service,Public order and safety
 4.0,0.0,Service,Economic affairs
-4.a,4.0,Component Of Service,Enterprise and economic development
-4.b,4.0,Component Of Service,Science and technology
-4.c,4.0,Component Of Service,Employment policies
-4.d,4.0,Component Of Service,"Agriculture, fisheries and forestry"
-4.e,4.0,Component Of Service,Transport
+4.a,4.0,Component of Service,Enterprise and economic development
+4.b,4.0,Component of Service,Science and technology
+4.c,4.0,Component of Service,Employment policies
+4.d,4.0,Component of Service,"Agriculture, fisheries and forestry"
+4.e,4.0,Component of Service,Transport
 5.0,0.0,Service,Environment protection
 6.0,0.0,Service,Housing and community amenities
 7.0,0.0,Service,Health
