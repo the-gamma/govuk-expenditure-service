@@ -34,7 +34,6 @@ type Dictionaries =
     }
 let [<Literal>] yearsDictCsv = __SOURCE_DIRECTORY__ + "/../../data/headers/years.csv"
 let [<Literal>] servicesDictCsv = __SOURCE_DIRECTORY__ + "/../../data/headers/subservices.csv"
-// let [<Literal>] servicesCsv = __SOURCE_DIRECTORY__ + "/../../data/headers/Table5-4-1.csv"
 
 let [<Literal>] Y20112015Csv = __SOURCE_DIRECTORY__ + "/../../data/headers/Table5-2.csv" //subservicesCsv
 let [<Literal>] Y19992015Csv = __SOURCE_DIRECTORY__ + "/../../data/headers/Table4-2.csv" //oldservicesCsv
@@ -76,21 +75,6 @@ let getParentOfObject value keyValueList =
     | Some (key, (parent, level, v) ) -> parent
     | None -> ""
 
-// let isAlphabet (str:string) =
-//     let isInAlphabetRange x = (x > 64 && x < 91 ) || (x > 96 && x < 123) || x = 32
-//     let inRange = 
-//         str
-//         |> Seq.map (fun c -> isInAlphabetRange(int c))
-//         |> Seq.exists (fun b -> b=true)
-//     inRange
-
-
-    // children |> dict  
-
-// let getParentOfService serviceID aSeq =   
-//     let (_,(parentID,_)) = aSeq |> List.find (fun (id, (parentid, serviceDetails)) -> serviceDetails = subserviceName)
-//     parentID
-
 let getKeyOfSubService subServiceName keyValueList =
     match List.tryFind (fun (id, (parentid, sserviceName)) -> (sserviceName = subServiceName)) keyValueList with
     | Some (key, value) -> key 
@@ -101,21 +85,13 @@ let OfWhichAreMainServices serviceDictionary =
  
 let getChildrenWithParentIDAtLevel parentID itemLevel serviceDictionary =   
     serviceDictionary |> Seq.filter (fun (KeyValue(id, (parentid, level, _))) -> level = itemLevel && parentid = parentID)
-
+    
 let getGrandchildrenOfServiceID serviceID aSeq =
     let total = new Dictionary<string, (string * string * string)>() 
     let children = getChildrenWithParentIDAtLevel serviceID "Subservice" aSeq
-    let totalGrandchildren = children |> Seq.map (fun (KeyValue(id, (parentid,level,serviceName))) -> 
-        let grandchildrenOfAChild = getChildrenWithParentIDAtLevel id "Component of Subservice" aSeq
-        grandchildrenOfAChild |> Seq.iter (fun (KeyValue(id, (parentid,level,name))) -> total.Add(id, (parentid, level, name)))
-        ) 
-    printfn "AllGrandchildren: %A " totalGrandchildren
+    let grandchildren = children |> Seq.map (fun (KeyValue(id, (parentid,level,serviceName))) -> getChildrenWithParentIDAtLevel id "Component of Subservice" aSeq)    
+    grandchildren |> Seq.iter (fun x -> x |> Seq.iter (fun (KeyValue(id, (parentid,level,name))) -> total.Add(id, (parentid, level, name))))
     total
-    
-// let isMainSubService (subServiceSeq) = 
-//     let mainSubServices = subServiceSeq |> Seq.filter (fun (id, (parentid, serviceDetails)) -> 
-//         not (isAlphabet id))  
-//     mainSubServices
 
 let retrieveData () = 
     // -------------------

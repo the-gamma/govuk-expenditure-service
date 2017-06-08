@@ -97,6 +97,8 @@ let app =
       memberPathf "/byService/%s/pickOptions" (fun serviceid ->
             [ { name="bySubService"; returns= {kind="nested"; endpoint="/byService/" + serviceid + "/pickSubService"}
                 trace=[| "service=" + serviceid |]; schema = noSchema }
+              { name="bySubServiceComponents"; returns= {kind="nested"; endpoint="/byService/" + serviceid + "/pickSubServiceComponents"}
+                trace=[| |]; schema = noSchema }
               { name="byAccount"; returns= {kind="nested"; endpoint="/byService/pickAccount"}
                 trace=[| "service=" + serviceid |]; schema = noSchema }
               { name="inTermsOf"; returns= {kind="nested"; endpoint="/byService/pickTerms"}
@@ -106,8 +108,6 @@ let app =
 
       memberPathf "/byService/%s/pickSlice" (fun serviceid ->
         [ { name="bySubService"; returns= {kind="nested"; endpoint="/byService/" + serviceid + "/pickSubService"}
-            trace=[| |]; schema = noSchema }
-          { name="bySubServiceComponents"; returns= {kind="nested"; endpoint="/byService/" + serviceid + "/pickSubServiceComponents"}
             trace=[| |]; schema = noSchema }
           { name="byAccount"; returns= {kind="nested"; endpoint="/byService/pickAccount"}
             trace=[| |]; schema = noSchema }
@@ -127,8 +127,8 @@ let app =
         [ for (KeyValue(id, (parent, level, service))) in subservices ->
             let typ = { name="tuple"; ``params``=[| "int"; "float" |] }
             let typ = { name="seq"; ``params``=[| typ |]}
-            { name=service; returns={ kind="nested"; endpoint="/data"}
-              trace=[|"service="+id;"level=Component of Subservice"|]; schema = noSchema }])
+            { name=service; returns={ kind="primitive"; ``type``= typ; endpoint="/data"}
+              trace=[|"service=" + id;"level=Component of Subservice"|]; schema = noSchema }])
         
       memberPathf "/%s/pickAccount" (fun byX ->
         [ for (KeyValue(id, account)) in allData.Accounts ->
@@ -161,9 +161,8 @@ let app =
           [ for kvps in (Utils.ASCII.toString r.rawForm).Split('&') ->
               match kvps.Split('=') with
               | [| k; v |] -> k, v
-              | _ -> failwith "bad trace" ] |> dict
+              | _ -> failwith "bad  1" ] |> dict
         
-        let traceMessage = sprintf "Trace: %A" trace
         match trace with
         | (Lookup "service" s) & (Lookup "account" a) ->
           allData.Data
@@ -215,7 +214,7 @@ let app =
         //       (service, dt.Value))
         //     |> formatPairSeq JsonValue.String
         //     |> Successful.OK
-        | _ -> failwith traceMessage)
+        | _ -> failwith "bad trace")
         // | (Lookup "service" s) & (Lookup "subservice" ss) ->
         //   allData.Data
         //     |> Seq.filter (fun dt -> dt.Service = s && dt.Subservice = ss)
