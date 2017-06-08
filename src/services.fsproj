@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="common/serializer.fs" />
     <Compile Include="common/JsonHandler.fs" />
-    <Compile Include="common/ReadDictionaries.fs" />
+    <Compile Include="common/LoadData.fs" />
     <Compile Include="servers/demo.fsx" />
     <Compile Include="servers/expenditure.fsx" />
     <Compile Include="release.fs" />
