@@ -9,10 +9,11 @@ open Suave.Filters
 open Suave.Operators
 open System
 
+
 /// List of available servers - corresponds to folders
 let servers = 
   [ "expenditure", GovUK.Server.app ] |> dict
-   //[ "demo", Services.Demo.app ] |> dict
+  //[ "demo", Services.Demo.app ] |> dict
   
   
 /// Drop the <s> part from http://localhost:123/<s>/something

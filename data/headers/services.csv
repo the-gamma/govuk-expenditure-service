@@ -1,21 +1,21 @@
-Index,Name
-1.0,General public services
-1.a,Public and common services
-1.b,International services
-1.c,Public sector debt interest
-2.0,Defence
-3.0,Public order and safety
-4.0,Economic affairs
-4.a,Enterprise and economic development
-4.b,Science and technology
-4.c,Employment policies
-4.d,"Agriculture, fisheries and forestry"
-4.e,Transport
-5.0,Environment protection
-6.0,Housing and community amenities
-7.0,Health
-8.0,"Recreation, culture and religion"
-9.0,Education
-10.0,Social protection
-11.0,EU transactions
-12.0,Total Managed Expenditure
+Index,ParentIndex,Level,Name
+1.0,0.0,Service,General public services
+1.a,1.0,Component of Service,Public and common services
+1.b,1.0,Component of Service,International services
+1.c,1.0,Component of Service,Public sector debt interest
+2.0,0.0,Service,Defence
+3.0,0.0,Service,Public order and safety
+4.0,0.0,Service,Economic affairs
+4.a,4.0,Component of Service,Enterprise and economic development
+4.b,4.0,Component of Service,Science and technology
+4.c,4.0,Component of Service,Employment policies
+4.d,4.0,Component of Service,"Agriculture, fisheries and forestry"
+4.e,4.0,Component of Service,Transport
+5.0,0.0,Service,Environment protection
+6.0,0.0,Service,Housing and community amenities
+7.0,0.0,Service,Health
+8.0,0.0,Service,"Recreation, culture and religion"
+9.0,0.0,Service,Education
+10.0,0.0,Service,Social protection
+11.0,0.0,Service,EU transactions
+12.0,0.0,Service,Total Managed Expenditure
